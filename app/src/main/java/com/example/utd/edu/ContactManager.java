@@ -50,6 +50,7 @@ public class ContactManager extends AppCompatActivity  {
         ContactDetails.sort(list);
         ContactAdapter adapter = new ContactAdapter(this, list);
         // Creating objects for elements in the activity.
+        TextView noContacts =(TextView) findViewById(R.id.no_contacts);
         listView = (ListView) findViewById(R.id.listView);
 
         listView.setAdapter(adapter);
@@ -72,6 +73,7 @@ public class ContactManager extends AppCompatActivity  {
                 intent.putExtra("Contact.FirstName", firstName);
                 //intent.putExtra("Contact.LastName", )
                 intent.putExtra("Contact.Position", position+"");
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                 }
             });
@@ -79,7 +81,7 @@ public class ContactManager extends AppCompatActivity  {
         Created by: Swathi Varadharajan and Ranjani Suresh
         Description: imageButton Item Click Listener( for Add button)*
          */
-
+        if(list.size()<1) noContacts.setVisibility(View.VISIBLE);
 
 
     }
@@ -99,7 +101,7 @@ public class ContactManager extends AppCompatActivity  {
         Log.d("CheckingNow","IT comes here");
         if (id == R.id.add_new_contact) {
             Intent intent = new Intent(this, ContactDetails.class);
-            //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.addFlags( Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
             Intent i=new Intent(this,ContactDetails.class);
             i.putExtra("mode", "add");

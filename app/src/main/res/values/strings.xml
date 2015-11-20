@@ -5,4 +5,5 @@
     <string name="title_activity_contact_details">Contact Details</string>
     <string name="title_activity_contact_manager_list">Contact Manager</string>
     <string name="new_contact_menu">Add New Contact</string>
+    <string name="no_contacts">No Contacts</string>
 </resources>

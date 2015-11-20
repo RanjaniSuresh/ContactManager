@@ -5,7 +5,9 @@
 
 package com.example.utd.edu;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -33,6 +35,7 @@ public class ContactDetails extends AppCompatActivity {
     private EditText email;
     private EditText phone;
     private TextView fName;
+    public static boolean backOk;
 
     /* Created by: Swathi Varadharajan and Ranjani Suresh */
     @Override
@@ -78,7 +81,13 @@ public class ContactDetails extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_edit_delete, menu);
-        return true;
+        if(selectedPosition==-1){
+            menu.findItem(R.id.delete_contact).setEnabled(false).setVisible(false);
+        }
+        else{
+            menu.findItem(R.id.delete_contact).setEnabled(true);
+        }
+        return super.onCreateOptionsMenu(menu);
     }
 
     /**
@@ -91,8 +100,13 @@ public class ContactDetails extends AppCompatActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        Log.d("CheckingNow", "IT comes here");
-        if (id == R.id.edit_contact) {
+
+        if(id==android.R.id.home){
+            Log.d("CheckingNow", "IT comes here: home");
+            onBackPressed();
+            return true;
+        }
+        else if (id == R.id.edit_contact) {
             ContactManagerVO contact = new ContactManagerVO();
             contact.setFirstName(firstName.getText().toString());
             contact.setLastName(lastName.getText().toString());
@@ -101,11 +115,14 @@ public class ContactDetails extends AppCompatActivity {
             if (firstName.getText().length() > 0) {
                 if (selectedPosition != -1) {
                     modifyData(contact);
+                    selectedPosition=-1;
                 } else {
                     saveData(contact);
                 }
                 Intent intent = new Intent(ContactDetails.this, ContactManager.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
+                finish();
             } else {
                 Context context = getApplicationContext();
                 CharSequence text = "First Name Required";
@@ -121,9 +138,31 @@ public class ContactDetails extends AppCompatActivity {
 
 
         if (id == R.id.delete_contact) {
-            delete();
-            Intent intent = new Intent(ContactDetails.this, ContactManager.class);
-            startActivity(intent);
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+
+            // set title
+            //alertDialogBuilder.setTitle("Your Title");
+
+            // set dialog message
+            alertDialogBuilder
+                    .setMessage("Do you want to delete?")
+                    .setCancelable(true)
+                    .setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog,int id) {
+                            // if this button is clicked, close the dialog box
+                            delete();
+                            Intent intent = new Intent(ContactDetails.this, ContactManager.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
+
+                        }
+                    });
+            // create alert dialog
+            AlertDialog alertDialog = alertDialogBuilder.create();
+
+            // show it
+            alertDialog.show();
+
 
         }
         return super.onOptionsItemSelected(item);
@@ -170,6 +209,7 @@ public class ContactDetails extends AppCompatActivity {
         }
         sort(ContactManager.list);
         fileOperations.writeFile(ContactManager.list);
+        selectedPosition=-1;
         return ContactManager.list;
     }
 
@@ -197,6 +237,43 @@ public class ContactDetails extends AppCompatActivity {
         return oldData;
 
     }
+
+    @Override
+    public void onPause(){
+        selectedPosition=-1;
+        super.onPause();
+    }
+    @Override
+    public void onBackPressed(){
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        backOk=false;
+        // set title
+        //alertDialogBuilder.setTitle("Your Title");
+
+        // set dialog message
+        alertDialogBuilder
+                .setMessage("Discard Changes?")
+                .setCancelable(true)
+                .setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog,int id) {
+                        // if this button is clicked, close the dialog box
+                        backOk=true;
+                        Intent intent = new Intent(ContactDetails.this, ContactManager.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+        // create alert dialog
+        AlertDialog alertDialog = alertDialogBuilder.create();
+
+        // show it
+        alertDialog.show();
+
+
+
+    }
+
 
 
 }

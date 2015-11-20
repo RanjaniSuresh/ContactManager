@@ -29,6 +29,13 @@
             android:layout_height="wrap_content"
             android:id="@+id/listView"
             />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/no_contacts"
+            android:id="@+id/no_contacts"
+            android:textColor="@android:color/holo_green_dark"
+            android:visibility="gone"/>
 
 
     </LinearLayout>
